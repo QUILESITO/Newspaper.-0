@@ -1,0 +1,18 @@
+[
+ {"name":"El País","url":"https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada","bias":"cen-izq","cat":"espana"},
+ {"name":"elDiario.es","url":"https://www.eldiario.es/rss/","bias":"izq","cat":"espana"},
+ {"name":"Público","url":"https://www.publico.es/rss","bias":"izq","cat":"espana"},
+ {"name":"La Vanguardia","url":"https://www.lavanguardia.com/rss/home.xml","bias":"cen","cat":"espana"},
+ {"name":"20minutos","url":"https://www.20minutos.es/rss/","bias":"cen","cat":"espana"},
+ {"name":"RTVE","url":"https://www.rtve.es/api/noticias.rss","bias":"cen","cat":"espana"},
+ {"name":"Europa Press","url":"https://www.europapress.es/rss/rss.aspx","bias":"cen","cat":"espana","tipo":"agencia"},
+ {"name":"El Confidencial","url":"https://rss.elconfidencial.com/espana/","bias":"cen-der","cat":"espana"},
+ {"name":"El Mundo","url":"https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml","bias":"cen-der","cat":"espana"},
+ {"name":"ABC","url":"https://www.abc.es/rss/2.0/portada/","bias":"der","cat":"espana"},
+ {"name":"La Razón","url":"https://www.larazon.es/rss/portada.xml","bias":"der","cat":"espana"},
+ {"name":"BBC Mundo","url":"https://feeds.bbci.co.uk/mundo/rss.xml","bias":"cen","cat":"mundo"},
+ {"name":"DW Español","url":"https://rss.dw.com/xml/rss-sp-all","bias":"cen","cat":"mundo"},
+ {"name":"France 24","url":"https://www.france24.com/es/rss","bias":"cen","cat":"mundo"},
+ {"name":"Marca","url":"https://e00-marca.uecdn.es/rss/portada.xml","bias":"cen","cat":"futbol"},
+ {"name":"AS","url":"https://as.com/rss/tags/ultimas_noticias.xml","bias":"cen","cat":"futbol"}
+]

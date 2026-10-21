@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Newspaper</title><meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500&display=swap">
+<style>
+:root{--bg:#fff;--ink:#17181A;--mut:#55585F;--line:#E6E7EA;--izq:#3B6FB6;--cen:#9EA3AB;--der:#C4503F;--soft:#F5F6F7;--hd:Manrope,system-ui,sans-serif;--bd:Inter,system-ui,sans-serif}
+:root[data-t=dark]{--bg:#0F1012;--ink:#EDEDEF;--mut:#A3A6AD;--line:#26282C;--izq:#6A9BE0;--cen:#7E838C;--der:#E0806F;--soft:#17181B}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#0F1012;--ink:#EDEDEF;--mut:#A3A6AD;--line:#26282C;--izq:#6A9BE0;--cen:#7E838C;--der:#E0806F;--soft:#17181B}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--bd);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+a{color:inherit}button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.w{max-width:760px;margin:0 auto;padding:0 20px}
+header{display:flex;align-items:baseline;justify-content:space-between;padding:22px 0 14px;border-bottom:1px solid var(--line)}
+.logo{font:800 24px var(--hd);letter-spacing:-.02em;text-decoration:none}
+.tb{background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:13px;color:var(--mut)}
+nav{display:flex;gap:18px;overflow-x:auto;padding:12px 0;border-bottom:1px solid var(--line);scrollbar-width:none;font-size:14px}
+nav button{background:none;border:0;padding:4px 0;color:var(--mut);white-space:nowrap}nav button[aria-current=true]{color:var(--ink);font-weight:500;border-bottom:2px solid var(--ink)}
+.meta{font-size:13px;color:var(--mut);margin:14px 0}
+.sw{position:relative;overflow:hidden;border-bottom:1px solid var(--line);touch-action:pan-y}
+.bg{position:absolute;inset:0;display:flex;align-items:center;padding-left:20px;background:var(--soft);color:var(--mut);font-size:13px}
+.row{position:relative;display:flex;gap:18px;align-items:baseline;padding:18px 40px 18px 0;background:var(--bg);text-decoration:none;user-select:none;-webkit-user-select:none}
+.row.read .h{color:var(--mut)}.t{width:82px;flex:none;font-size:13px;color:var(--mut)}
+.h{flex:1;font:700 18px/1.35 var(--hd)}.h small{display:block;font:400 12.5px var(--bd);color:var(--mut);margin-top:3px}
+.x{position:absolute;right:0;top:12px;width:36px;height:36px;border:0;background:none;color:var(--mut);font-size:20px}
+.bar{display:flex;width:84px;height:4px;border-radius:2px;overflow:hidden;flex:none;background:var(--line)}.bar i{display:block;height:100%}
+.big{width:100%;max-width:420px;height:6px;margin:6px 0}
+article h1{font:800 clamp(28px,6vw,38px)/1.15 var(--hd);letter-spacing:-.02em;margin:10px 0 14px}
+article h2{font:700 19px var(--hd);margin:30px 0 8px}.lead{font-size:19px;color:#3C3F45;color:color-mix(in srgb,var(--ink) 85%,var(--bg))}
+article li{margin:8px 0}sup a{font-size:12px;margin-left:2px;color:var(--mut)}
+.note{background:var(--soft);border-radius:8px;padding:12px 14px;font-size:14px;color:var(--mut);margin:16px 0}
+.back,.act{background:none;border:0;padding:0;color:var(--mut);font-size:14px;text-decoration:none}.act{border:1px solid var(--line);border-radius:6px;padding:5px 12px;margin-right:8px}
+details{margin:8px 0;font-size:14px;color:var(--mut)}summary{cursor:pointer}
+.src{padding:12px 0;border-bottom:1px solid var(--line);font-size:15px}.src small{display:block;color:var(--mut);font-size:12.5px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;display:none;gap:14px;align-items:center;z-index:9}
+#toast button{background:none;border:0;color:inherit;text-decoration:underline;padding:0}
+@media(max-width:520px){.t{width:62px}.bar{width:56px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="w"><header><a class="logo" href="#/">Newspaper</a><button class="tb" id="th" aria-label="Cambiar tema">Tema</button></header>
+<nav id="nav" aria-label="Categorías"></nav><main id="app"><p class="meta">Cargando noticias…</p></main>
+<p class="meta" style="padding:28px 0">Newspaper combina titulares y resúmenes de varios medios. Los textos los redacta una IA y puede equivocarse: comprueba siempre las fuentes enlazadas.</p></div>
+<div id="toast" role="status"></div>
+<script>
+const CATS={todas:'Últimas',geopolitica:'Geopolítica',ue:'Unión Europea',espana:'España',alicante:'Alicante',eeuu:'EE. UU.',china:'China',empresas:'Empresas',economia:'Economía y bolsa',tecnologia:'Tecnología e IA',ciencia:'Ciencia',cultura:'Cultura',deportes:'Deportes',tenis:'Tenis',futbol:'Fútbol',mundo:'Mundo'};
+const BL={izq:'Izquierda','cen-izq':'Centro-izquierda',cen:'Centro','cen-der':'Centro-derecha',der:'Derecha',desconocido:'Sin clasificar'};
+const $=s=>document.querySelector(s),app=$('#app'),LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let D=null,cat='todas';
+const ago=t=>{const m=Math.max(1,Math.round((Date.now()-t)/6e4));return m<60?`hace ${m} min`:m<1440?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} d`};
+const nm=c=>new Set(c.fuentes.map(s=>s.medio)).size;
+const bar=(b,big)=>b.suficiente?`<span class="bar ${big?'big':''}" role="img" aria-label="Izquierda ${b.izquierda}%, centro ${b.centro}%, derecha ${b.derecha}%"><i style="width:${b.izquierda}%;background:var(--izq)"></i><i style="width:${b.centro}%;background:var(--cen)"></i><i style="width:${b.derecha}%;background:var(--der)"></i></span>`:`<span class="bar ${big?'big':''}" title="Muestra insuficiente"></span>`;
+function toast(msg,undo){const t=$('#toast');t.innerHTML=esc(msg)+(undo?' <button>Deshacer</button>':'');t.style.display='flex';if(undo)t.querySelector('button').onclick=()=>{undo();t.style.display='none'};clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',5000)}
+// Descartadas: se guardan en el dispositivo 7 días (si la noticia sigue publicada no reaparece).
+const dis=()=>{const d=LS.get('dis',{}),lim=Date.now()-7*864e5;for(const k in d)if(d[k]<lim)delete d[k];return d};
+function dismiss(id){const d=dis();d[id]=Date.now();LS.set('dis',d);home();toast('Noticia quitada',()=>{const e=dis();delete e[id];LS.set('dis',e);home()})}
+function swipe(el){const r=el.querySelector('.row'),id=el.dataset.id;let x0=0,dx=0,on=false,mv=false;
+ el.addEventListener('pointerdown',e=>{if(e.button>0||e.target.closest('.x'))return;x0=e.clientX;dx=0;on=true;mv=false});
+ el.addEventListener('pointermove',e=>{if(!on)return;dx=e.clientX-x0;if(Math.abs(dx)>8){mv=true;try{el.setPointerCapture(e.pointerId)}catch{}}if(dx>0){r.style.transition='none';r.style.transform=`translateX(${dx}px)`;r.style.opacity=1-dx/el.offsetWidth*.7}});
+ const end=()=>{if(!on)return;on=false;r.style.transition='transform .18s,opacity .18s';if(dx>el.offsetWidth*.3){r.style.transform='translateX(110%)';r.style.opacity=0;setTimeout(()=>dismiss(id),170)}else{r.style.transform='';r.style.opacity=1}setTimeout(()=>mv=false,0)};
+ el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('click',e=>{if(mv){e.preventDefault();e.stopPropagation()}},true)}
+function home(){const d=dis(),rd=LS.get('read',{}),n=Object.keys(d).length;
+ const rows=D.clusters.filter(c=>(cat==='todas'||c.cat===cat)&&!d[c.id]);
+ const stale=Date.now()-D.generado>3*36e5?`<div class="note">Los datos tienen ${ago(D.generado).replace('hace ','')} de antigüedad: la actualización automática puede haberse retrasado.</div>`:'';
+ const err=D.errores.length?`<details><summary>${D.errores.length} aviso(s) de fuentes</summary>${D.errores.map(e=>`<div>${esc(e)}</div>`).join('')}</details>`:'';
+ app.innerHTML=`<p class="meta">Actualizado ${ago(D.generado)} · Desliza una noticia a la derecha para quitarla</p>${stale}${rows.map(c=>`<div class="sw" data-id="${c.id}"><div class="bg" aria-hidden="true">Quitar</div><a class="row ${rd[c.id]?'read':''}" draggable="false" href="#/n/${c.id}"><span class="t">${ago(c.ultima)}</span><span class="h">${esc(c.titular)}<small>${esc(CATS[c.cat]||'')} · ${nm(c)} ${nm(c)===1?'medio':'medios'}</small></span>${bar(c.bias)}</a><button class="x" data-x="${c.id}" aria-label="Quitar noticia">×</button></div>`).join('')||'<p class="meta">No hay noticias en esta categoría.</p>'}<p class="meta">${n?`${n} quitada(s) · <button class="back" id="rs" style="text-decoration:underline">Restaurar</button>`:''}</p>${err}`;
+ app.querySelectorAll('.sw').forEach(swipe);app.querySelectorAll('.x').forEach(b=>b.onclick=()=>dismiss(b.dataset.x));
+ const rs=$('#rs');if(rs)rs.onclick=()=>{LS.set('dis',{});home()}}
+const refs=f=>f.map(i=>`<sup><a href="${esc(C.fuentes[i-1].url)}" target="_blank" rel="noopener" title="${esc(C.fuentes[i-1].medio)}">${i}</a></sup>`).join('');let C;
+const lst=(a,t)=>a?.length?`<h2>${t}</h2><ul>${a.map(x=>`<li>${esc(x.t)}${refs(x.f)}</li>`).join('')}</ul>`:'';
+function reader(id){C=D.clusters.find(c=>c.id===id);const rd=LS.get('read',{});
+ if(!C){app.innerHTML='<p><a class="back" href="#/">← Volver</a></p><p>Esta noticia ya no está disponible. Newspaper guarda las noticias 48 horas.</p>';return}
+ rd[id]=1;LS.set('read',rd);const a=C.articulo||{tipo:'basico'},b=C.bias,ia=a.tipo==='ia',n=nm(C);
+ const seg=k=>b.lista.filter(x=>k.includes(x.bias)).map(x=>x.medio).join(', ')||'—';
+ app.innerHTML=`<article><p style="margin:18px 0 0"><a class="back" href="#/">← Volver</a></p><p class="meta" style="margin:20px 0 0">${esc(CATS[C.cat]||'')} · Primera cobertura ${ago(C.primera)}${ia?` · Artículo generado ${ago(a.generado)}`:''}</p>
+ <h1>${esc(ia?a.titular:C.titular)}</h1>${ia?`<p class="lead">${esc(a.entradilla)}</p>${a.resumen?`<p>${esc(a.resumen)}</p>`:''}`:`<div class="note">${n<2?'Información insuficiente para contrastar: solo hay una fuente.':'Resumen básico: aún no hay un artículo contrastado de esta noticia. Estos son los titulares de cada medio.'}</div>`}
+ <p><button class="act" id="sh">Compartir</button></p>
+ ${ia?lst(a.que_sabemos,'Qué sabemos')+lst(a.no_confirmado,'Qué no está confirmado')+lst(a.desacuerdos,'Qué dicen las distintas fuentes'):''}
+ <h2>Orientación de los medios que la cubren</h2>${bar(b,1)}
+ <p class="meta" style="margin:0">${b.suficiente?`Izquierda ${b.izquierda}% · Centro ${b.centro}% · Derecha ${b.derecha}%`:'Muestra insuficiente para mostrar un reparto fiable'} · ${b.medios} medios${b.desconocidos?`, ${b.desconocidos} sin clasificar`:''}</p>
+ <details><summary>Ver medios por segmento y metodología</summary><p>Izquierda (incluye centro-izquierda): ${esc(seg(['izq','cen-izq']))}<br>Centro: ${esc(seg(['cen']))}<br>Derecha (incluye centro-derecha): ${esc(seg(['der','cen-der']))}<br>Sin clasificar: ${esc(seg(['desconocido']))}</p><p>Cada medio cuenta una vez. La etiqueta describe la línea editorial del medio, no la veracidad de la noticia ni del artículo.</p></details>
+ <h2>Fuentes</h2>${C.fuentes.map((s,i)=>`<div class="src"><a href="${esc(s.url)}" target="_blank" rel="noopener">${i+1}. ${esc(s.titulo)}</a><small>${esc(s.medio)} · ${ago(s.fecha)} · ${esc(BL[b.lista.find(x=>x.medio===s.medio)?.bias]||'')}</small></div>`).join('')}
+ <div class="note">Limitaciones: este texto se elabora con los titulares y resúmenes que publican los medios en sus RSS, no con los artículos completos. Consultados: ${n} ${n===1?'medio':'medios'}.</div></article>`;
+ $('#sh').onclick=async()=>{try{navigator.share?await navigator.share({title:C.titular,url:location.href}):(await navigator.clipboard.writeText(location.href),toast('Enlace copiado'))}catch{}};scrollTo(0,0)}
+function route(){if(!D)return;const m=location.hash.match(/^#\/n\/(\w+)/);m?reader(m[1]):home()}
+function nav(){$('#nav').innerHTML=Object.entries(CATS).map(([k,v])=>`<button data-c="${k}" aria-current="${k===cat}">${v}</button>`).join('');$('#nav').onclick=e=>{const k=e.target.dataset.c;if(!k)return;cat=k;nav();location.hash='#/';route()}}
+$('#th').onclick=()=>{const t=document.documentElement,d=(t.dataset.t||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))==='dark'?'light':'dark';t.dataset.t=d;LS.set('theme',d)};
+if(LS.get('theme'))document.documentElement.dataset.t=LS.get('theme');
+async function load(){try{const r=await fetch('data/news.json?'+Date.now());if(!r.ok)throw 0;D=await r.json();route()}catch{if(!D)app.innerHTML='<p>No se han podido cargar las noticias. Comprueba tu conexión y vuelve a intentarlo.</p>'}}
+addEventListener('hashchange',route);nav();load();setInterval(load,6e5);
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
