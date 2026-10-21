@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -68,6 +69,10 @@ function home(){const d=dis(),rd=LS.get('read',{}),n=Object.keys(d).length;
  const rs=$('#rs');if(rs)rs.onclick=()=>{LS.set('dis',{});home()}}
 const refs=f=>f.map(i=>`<sup><a href="${esc(C.fuentes[i-1].url)}" target="_blank" rel="noopener" title="${esc(C.fuentes[i-1].medio)}">${i}</a></sup>`).join('');let C;
 const lst=(a,t)=>a?.length?`<h2>${t}</h2><ul>${a.map(x=>`<li>${esc(x.t)}${refs(x.f)}</li>`).join('')}</ul>`:'';
+const ORD=['cen','cen-izq','cen-der','izq','der'];
+function prin(){const bl=Object.fromEntries(C.bias.lista.map(x=>[x.medio,x.bias]));let s=C.fuentes[0],r=99;for(const f of C.fuentes){const k=ORD.indexOf(bl[f.medio]),q=k<0?98:k;if(q<r){r=q;s=f}}
+ const l=bl[s.medio]||'desconocido',b=C.bias;let pos=null;if(b.suficiente){pos=['izq','cen-izq'].includes(l)?b.izquierda/2:l==='cen'?b.izquierda+b.centro/2:['der','cen-der'].includes(l)?100-b.derecha/2:null}
+ return `<h2>Cómo lo cuenta ${esc(s.medio)}</h2><p class="meta" style="margin:0">${esc(BL[l])} · ${ago(s.fecha)} · ${r<=2?'es el medio de orientación más centrista entre los que lo cubren':'no hay medios de centro entre las fuentes; se muestra el más próximo'}</p>${pos===null?'':`<div style="position:relative;max-width:420px;height:16px" aria-hidden="true"><span style="position:absolute;left:${pos}%;transform:translateX(-50%);font-size:10px;color:var(--mut)">▲ ${esc(s.medio)}</span></div>`}<p class="lead" style="margin:10px 0 6px">${esc(s.titulo)}</p>${s.resumen?`<p>${esc(s.resumen)}</p>`:''}<p><a class="act" href="${esc(s.url)}" target="_blank" rel="noopener">Leer la noticia completa en ${esc(s.medio)}</a></p><p class="meta" style="margin:0">Mostramos el titular y el avance que publica el propio medio. El texto completo está en su web.</p>`}
 function reader(id){C=D.clusters.find(c=>c.id===id);const rd=LS.get('read',{});
  if(!C){app.innerHTML='<p><a class="back" href="#/">← Volver</a></p><p>Esta noticia ya no está disponible. Newspaper guarda las noticias 48 horas.</p>';return}
  rd[id]=1;LS.set('read',rd);const a=C.articulo||{tipo:'basico'},b=C.bias,ia=a.tipo==='ia',n=nm(C);
@@ -75,7 +80,7 @@ function reader(id){C=D.clusters.find(c=>c.id===id);const rd=LS.get('read',{});
  app.innerHTML=`<article><p style="margin:18px 0 0"><a class="back" href="#/">← Volver</a></p><p class="meta" style="margin:20px 0 0">${esc(CATS[C.cat]||'')} · Primera cobertura ${ago(C.primera)}${ia?` · Artículo generado ${ago(a.generado)}`:''}</p>
  <h1>${esc(ia?a.titular:C.titular)}</h1>${ia?`<p class="lead">${esc(a.entradilla)}</p>${a.resumen?`<p>${esc(a.resumen)}</p>`:''}`:`<div class="note">${n<2?'Información insuficiente para contrastar: solo hay una fuente.':'Resumen básico: aún no hay un artículo contrastado de esta noticia. Estos son los titulares de cada medio.'}</div>`}
  <p><button class="act" id="sh">Compartir</button></p>
- ${ia?lst(a.que_sabemos,'Qué sabemos')+lst(a.no_confirmado,'Qué no está confirmado')+lst(a.desacuerdos,'Qué dicen las distintas fuentes'):''}
+ ${prin()}${ia?lst(a.que_sabemos,'Qué sabemos')+lst(a.no_confirmado,'Qué no está confirmado')+lst(a.desacuerdos,'Qué dicen las distintas fuentes'):''}
  <h2>Orientación de los medios que la cubren</h2>${bar(b,1)}
  <p class="meta" style="margin:0">${b.suficiente?`Izquierda ${b.izquierda}% · Centro ${b.centro}% · Derecha ${b.derecha}%`:'Muestra insuficiente para mostrar un reparto fiable'} · ${b.medios} medios${b.desconocidos?`, ${b.desconocidos} sin clasificar`:''}</p>
  <details><summary>Ver medios por segmento y metodología</summary><p>Izquierda (incluye centro-izquierda): ${esc(seg(['izq','cen-izq']))}<br>Centro: ${esc(seg(['cen']))}<br>Derecha (incluye centro-derecha): ${esc(seg(['der','cen-der']))}<br>Sin clasificar: ${esc(seg(['desconocido']))}</p><p>Cada medio cuenta una vez. La etiqueta describe la línea editorial del medio, no la veracidad de la noticia ni del artículo.</p></details>
